@@ -73,7 +73,7 @@ The system uses a **FastAPI backend** with a **Next.js 14 frontend**, featuring 
 │  (512 chars, 80 OL)          │  ┌──────────┬──────────┬──────────────┐      │
 │         ↓                    │  │   Text   │  Image   │    Audio     │      │
 │  Dedup + Clean               │  └────┬─────┴────┬─────┴──────┬───────┘      │
-│  4,822 unique chunks         │       ↓          ↓           ↓               │
+│  4,822 unique chunks         │       ↓          ↓            ↓              │
 │         ↓                    │  BGE Embedder  Vision     Whisper            │
 │  4 Medical Textbooks         │  (1024d)      Provider   Transcribe          │
 │  (9,513 vectors)             │       ↓          ↓           ↓               │
