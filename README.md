@@ -67,7 +67,7 @@ The system uses a **FastAPI backend** with a **Next.js 14 frontend**, featuring 
 │  NIH MedlinePlus API         │  User Query (Text/Voice/Image)               │
 │         ↓                    │       ↓                                      │
 │  Alphabet Sweep (A-Z)        │  ┌─────────────────────────────────────┐     │
-│     300 topics/letter        │  │ Input Type Detection                 │    │
+│     300 topics/letter        │  │ Input Type Detection                │     │
 │         ↓                    │  └─────────────────────────────────────┘     │
 │  Sentence Chunker            │       ↓                                      │
 │  (512 chars, 80 OL)          │  ┌──────────┬──────────┬──────────────┐      │
