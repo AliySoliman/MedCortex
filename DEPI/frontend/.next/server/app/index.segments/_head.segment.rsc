@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:I[97367,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/031d4hdncmqdj.js"],"ViewportBoundary"]
+3:I[97367,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/031d4hdncmqdj.js"],"MetadataBoundary"]
+4:"$Sreact.suspense"
+5:I[27201,["/_next/static/chunks/1el5-48au3iai.js","/_next/static/chunks/031d4hdncmqdj.js"],"IconMark"]
+0:{"rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Medical Portal UI"}],["$","meta","1",{"name":"description","content":"Next.js app with Tailwind and a soft purple medical theme"}],["$","link","2",{"rel":"icon","href":"/favicon.ico?favicon.2vob68tjqpejf.ico","sizes":"256x256","type":"image/x-icon"}],["$","$L5","3",{}]]}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"EBT2YwzWu42YYaQptS3c0"}
