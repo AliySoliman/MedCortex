@@ -76,9 +76,9 @@ The system uses a **FastAPI backend** with a **Next.js 14 frontend**, featuring 
 │  4,822 unique chunks         │       ↓          ↓            ↓              │
 │         ↓                    │  BGE Embedder  Vision     Whisper            │
 │  4 Medical Textbooks         │  (1024d)      Provider   Transcribe          │
-│  (9,513 vectors)             │       ↓          ↓           ↓               │
-│         ↓                    │  Pinecone     Gemini      Text               │
-│  Pinecone Index              │  MMR Search   Analysis    Input              │
+│  (9,513 vectors)             │       ↓          ↓            ↓              │
+│         ↓                    │  Pinecone     Gemini        Text             │
+│  Pinecone Index              │  MMR Search   Analysis      Input            │
 │  (1024d, cosine)             │       ↓          ↓           ↓               │
 │                              │  ┌─────────────────────────────────────┐     │
 │                              │  │        Unified Context              │     │
