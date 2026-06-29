@@ -130,11 +130,21 @@ class GroqProvider(BaseAIProvider, BaseChatProvider):
             "Authorization": f"Bearer {self.api_key}",
         }
         
-        response = requests.post(url, files=files, data=data, headers=headers)
-        response.raise_for_status()
-        
-        result = response.json()
-        return result.get("text", "")
+        try:
+            response = requests.post(url, files=files, data=data, headers=headers, timeout=30)
+            response.raise_for_status()
+            
+            result = response.json()
+            return result.get("text", "")
+        except requests.exceptions.Timeout:
+            raise Exception("Transcription request timed out. The audio file may be too large or the service is slow.")
+        except requests.exceptions.HTTPError as e:
+            error_detail = response.text if response.text else str(e)
+            raise Exception(f"Groq API error ({response.status_code}): {error_detail}")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Transcription request failed: {str(e)}")
+        except Exception as e:
+            raise Exception(f"Unexpected error during transcription: {str(e)}")
 
 
 # Singleton instance for backward compatibility

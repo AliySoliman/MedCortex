@@ -67,3 +67,7 @@ class BaseChatProvider(ABC):
     def generate_stream(self, messages: List[Dict[str, str]], **kwargs):
         """Generate a streaming response from messages."""
         pass
+    
+    def transcribe_audio(self, audio_file: bytes, filename: str = "audio.webm", **kwargs) -> str:
+        """Transcribe audio using provider's transcription model. Default implementation raises NotImplementedError."""
+        raise NotImplementedError(f"{self.__class__.__name__} does not support audio transcription")
