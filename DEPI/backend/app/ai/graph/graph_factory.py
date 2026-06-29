@@ -7,6 +7,8 @@
 from typing import Dict, Any, Optional, Type
 from enum import Enum
 
+from app.ai.graph.multimodal_builder import get_multimodal_graph
+
 
 class GraphType(Enum):
     """Types of available graphs."""
@@ -16,6 +18,7 @@ class GraphType(Enum):
     PRESCRIPTION = "prescription"
     LAB = "lab"
     REPORT = "report"
+    MULTIMODAL = "multimodal"
 
 
 class GraphFactory:
@@ -23,6 +26,8 @@ class GraphFactory:
     
     def __init__(self):
         self._graph_builders: Dict[GraphType, callable] = {}
+        # Register the real, implemented graph (multimodal upload execution).
+        self.register_builder(GraphType.MULTIMODAL, get_multimodal_graph)
     
     def register_builder(self, graph_type: GraphType, builder: callable):
         """Register a graph builder function."""

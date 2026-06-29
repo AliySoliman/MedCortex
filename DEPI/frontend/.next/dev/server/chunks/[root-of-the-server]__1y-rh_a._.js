@@ -50,7 +50,6 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
 ;
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 async function POST(request) {
     try {
         const incomingFormData = await request.formData();
@@ -58,22 +57,28 @@ async function POST(request) {
         if (!(file instanceof Blob)) {
             throw new Error("Missing audio file");
         }
+        const mimeType = file.type || "audio/webm";
+        const extension = mimeType.includes("ogg") ? "ogg" : "webm";
         const formData = new FormData();
-        formData.append("file", file);
-        const response = await fetch(`${BACKEND_URL}/transcribe`, {
+        formData.append("file", file, `recording.${extension}`);
+        formData.append("model", "whisper-large-v3-turbo");
+        formData.append("response_format", "json");
+        formData.append("language", "en");
+        const response = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
             method: "POST",
+            headers: {
+                Authorization: `Bearer ${process.env.GROQ_API_KEY}`
+            },
             body: formData
         });
         const data = await response.json();
         if (!response.ok) {
-            console.error("Backend transcription error:", data);
-            throw new Error(data.error || "Transcription request failed");
+            throw new Error("Groq transcription request failed");
         }
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             text: data.text ?? ""
         });
-    } catch (error) {
-        console.error("Transcription error:", error);
+    } catch  {
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             error: "Transcription failed"
         }, {

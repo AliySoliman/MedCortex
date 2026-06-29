@@ -43,17 +43,15 @@ def test_upload_routes_image_to_vision(client):
     async def fake_process_upload(*args, **kwargs):
         return context
 
-    async def fake_vision_process(pipeline_context):
+    async def fake_graph_ainvoke(initial_state):
+        pipeline_context = initial_state["context"]
         pipeline_context.unified_context.vision_output = "Vision summary"
         pipeline_context.unified_context.vision_confidence = 0.92
         pipeline_context.unified_context.overall_confidence = 0.92
-        return pipeline_context
+        return {"context": pipeline_context}
 
     with patch("app.api.upload.multimodal_engine.process_upload", new=AsyncMock(side_effect=fake_process_upload)), \
-         patch("app.api.upload.VisionService") as vision_service_cls, \
-         patch("app.api.upload.OCRService") as ocr_service_cls:
-        vision_service_cls.return_value.process = AsyncMock(side_effect=fake_vision_process)
-
+         patch("app.api.upload.multimodal_graph.ainvoke", new=AsyncMock(side_effect=fake_graph_ainvoke)):
         response = client.post(
             "/upload",
             files={"file": ("scan.jpg", b"fake-image", "image/jpeg")},
@@ -63,12 +61,10 @@ def test_upload_routes_image_to_vision(client):
         payload = response.json()
         assert payload["status"] == "success"
         assert payload["unified_context"]["vision_output"] == "Vision summary"
-        vision_service_cls.return_value.process.assert_awaited_once()
-        ocr_service_cls.return_value.process.assert_not_called()
 
 
 def test_upload_routes_pdf_to_vision(client):
-    """PDFs now route to Vision (Gemini) instead of OCR for richer clinical interpretation."""
+    """PDFs route to Vision (Gemini) via the multimodal graph for richer clinical interpretation."""
     context = _make_processing_context(
         upload_id="upload-vision-pdf",
         filename="report.pdf",
@@ -79,17 +75,15 @@ def test_upload_routes_pdf_to_vision(client):
     async def fake_process_upload(*args, **kwargs):
         return context
 
-    async def fake_vision_process(pipeline_context):
+    async def fake_graph_ainvoke(initial_state):
+        pipeline_context = initial_state["context"]
         pipeline_context.unified_context.vision_output = "Doctor's review of lab report"
         pipeline_context.unified_context.vision_confidence = 0.92
         pipeline_context.unified_context.overall_confidence = 0.92
-        return pipeline_context
+        return {"context": pipeline_context}
 
     with patch("app.api.upload.multimodal_engine.process_upload", new=AsyncMock(side_effect=fake_process_upload)), \
-         patch("app.api.upload.VisionService") as vision_service_cls, \
-         patch("app.api.upload.OCRService") as ocr_service_cls:
-        vision_service_cls.return_value.process = AsyncMock(side_effect=fake_vision_process)
-
+         patch("app.api.upload.multimodal_graph.ainvoke", new=AsyncMock(side_effect=fake_graph_ainvoke)):
         response = client.post(
             "/upload",
             files={"file": ("report.pdf", b"fake-pdf", "application/pdf")},
@@ -99,8 +93,6 @@ def test_upload_routes_pdf_to_vision(client):
         payload = response.json()
         assert payload["status"] == "success"
         assert payload["unified_context"]["vision_output"] == "Doctor's review of lab report"
-        vision_service_cls.return_value.process.assert_awaited_once()
-        ocr_service_cls.return_value.process.assert_not_called()
 
 
 def test_shared_medical_parser_structures_unstructured_text():

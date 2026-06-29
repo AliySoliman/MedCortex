@@ -67,4 +67,5 @@ class ProcessorType(str, Enum):
     """Available processors for routing."""
     OCR = "OCR"
     VISION = "VISION"
+    TEXT = "TEXT"
     UNKNOWN = "UNKNOWN"

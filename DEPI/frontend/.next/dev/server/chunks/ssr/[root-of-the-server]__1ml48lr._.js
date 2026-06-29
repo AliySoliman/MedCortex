@@ -1617,7 +1617,7 @@ function ResponseCard({ data, referral = null, coordinates = null }) {
 function ClinicalAnswer({ text }) {
     const blocks = text.split(/\n{2,}/).map((block)=>block.trim()).filter(Boolean).filter((block)=>!block.includes("[DOCTOR_REFERRAL]"));
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "max-w-none space-y-4 text-sm leading-relaxed text-[#1a1a1a]",
+        className: "space-y-4 text-sm leading-relaxed text-[#1a1a1a]",
         children: blocks.map((block, blockIndex)=>{
             if (/^-{3,}$/.test(block)) {
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("hr", {

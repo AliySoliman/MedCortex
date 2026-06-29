@@ -243,7 +243,7 @@ function ClinicalAnswer({ text }: { text: string }) {
     .filter((block) => !block.includes("[DOCTOR_REFERRAL]"));
 
   return (
-    <div className="max-w-none space-y-4 text-sm leading-relaxed text-[#1a1a1a]">
+    <div className="space-y-4 text-sm leading-relaxed text-[#1a1a1a]">
       {blocks.map((block, blockIndex) => {
         if (/^-{3,}$/.test(block)) {
           return <hr key={blockIndex} className="border-[#ebebef]" />;

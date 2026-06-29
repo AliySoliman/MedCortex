@@ -12,14 +12,14 @@ from app.database.database import get_db
 from app.models.user import User
 from app.api.chat import get_current_user_optional
 from app.ai.multimodal.orchestrator import MultimodalOrchestrator
-from app.ai.multimodal.enums import ProcessorType
-from app.ai.ocr.service import OCRService
-from app.ai.vision.service import VisionService
+from app.ai.graph.multimodal_builder import get_multimodal_graph
 
 router = APIRouter(prefix="/upload", tags=["Uploads"])
 
-# Instantiate the primary orchestrator
+# Instantiate the primary orchestrator (LLM brain + heuristic fallback)
 multimodal_engine = MultimodalOrchestrator()
+# Compiled multimodal execution graph (cached)
+multimodal_graph = get_multimodal_graph()
 
 
 @router.post("", summary="Upload a medical document or image for unified processing")
@@ -30,15 +30,21 @@ async def process_upload(
 ) -> Dict[str, Any]:
     """
     Ingests a file through the Multimodal Engine.
-    Validates, Classifies, Routes to OCR or Vision, Parses into JSON, 
+    Validates, Classifies, Routes to OCR or Vision, Parses into JSON,
     and returns a UnifiedMedicalContext.
+
+    Phase 1 — MultimodalOrchestrator: LLM-driven classify + route (with
+    heuristic fallback) and preprocessing.
+    Phase 2 — Multimodal LangGraph: executes the routed processor and any
+    conditional enrichments (lab interpretation, drug interactions) based on
+    the extracted content.
     """
     try:
         file_bytes = await file.read()
         upload_id = str(uuid.uuid4())
         mime_type = file.content_type or "application/octet-stream"
-        
-        # Phase 1: Core Multimodal Routing and Preprocessing
+
+        # Phase 1: LLM-driven routing and preprocessing
         context = await multimodal_engine.process_upload(
             upload_id=upload_id,
             filename=file.filename,
@@ -46,28 +52,18 @@ async def process_upload(
             file_bytes=file_bytes
         )
 
-        # Phase 2: Execution based on orchestrator routing
-        if context.processor_type == ProcessorType.VISION:
-            vision_service = VisionService()
-            context = await vision_service.process(context)
-        elif context.processor_type == ProcessorType.OCR:
-            ocr_service = OCRService()
-            context = await ocr_service.process(context)
-        else:
-            # Text-only uploads or unsupported inputs can still surface the
-            # structured multimodal context produced by preprocessing.
-            pass
-            
-        # The result is now structured in context.unified_context.
-        # We return it to the frontend. Later, this context can be passed
-        # directly into the LangGraph state.
-        
+        # Phase 2: Execution through the multimodal LangGraph.
+        # The graph fans out by processor (vision/ocr/text) and runs
+        # conditional lab/drug enrichments before finalizing.
+        final_state = await multimodal_graph.ainvoke({"context": context})
+        context = final_state.get("context", context)
+
         return {
             "status": "success",
             "upload_id": upload_id,
             "unified_context": context.unified_context.model_dump()
         }
-        
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

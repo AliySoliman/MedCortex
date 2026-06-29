@@ -5,7 +5,10 @@
 
 from app.ai.multimodal.orchestrator import MultimodalOrchestrator
 from app.ai.multimodal.schemas import UnifiedMedicalContext, ProcessingContext
-from app.ai.multimodal.enums import ModalityType, DocumentType, PipelineStage
+from app.ai.multimodal.enums import ModalityType, DocumentType, PipelineStage, ProcessorType
+from app.ai.multimodal.decision import OrchestrationDecision, OrchestrationDecisionError
+from app.ai.multimodal.interfaces import BaseOrchestratorBrain
+from app.ai.multimodal.llm_brain import GroqOrchestratorBrain
 from app.ai.multimodal.logger import MultimodalLogger
 
 __all__ = [
@@ -15,5 +18,10 @@ __all__ = [
     "ModalityType",
     "DocumentType",
     "PipelineStage",
-    "MultimodalLogger"
+    "ProcessorType",
+    "OrchestrationDecision",
+    "OrchestrationDecisionError",
+    "BaseOrchestratorBrain",
+    "GroqOrchestratorBrain",
+    "MultimodalLogger",
 ]

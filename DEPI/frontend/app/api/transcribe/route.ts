@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
-
 export async function POST(request: Request) {
   try {
     const incomingFormData = await request.formData();
@@ -11,24 +9,31 @@ export async function POST(request: Request) {
       throw new Error("Missing audio file");
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
+    const mimeType = file.type || "audio/webm";
+    const extension = mimeType.includes("ogg") ? "ogg" : "webm";
 
-    const response = await fetch(`${BACKEND_URL}/transcribe`, {
+    const formData = new FormData();
+    formData.append("file", file, `recording.${extension}`);
+    formData.append("model", "whisper-large-v3-turbo");
+    formData.append("response_format", "json");
+    formData.append("language", "en");
+
+    const response = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+      },
       body: formData,
     });
 
-    const data = (await response.json()) as { text?: string; error?: string };
+    const data = (await response.json()) as { text?: string };
 
     if (!response.ok) {
-      console.error("Backend transcription error:", data);
-      throw new Error(data.error || "Transcription request failed");
+      throw new Error("Groq transcription request failed");
     }
 
     return NextResponse.json({ text: data.text ?? "" });
-  } catch (error) {
-    console.error("Transcription error:", error);
+  } catch {
     return NextResponse.json({ error: "Transcription failed" }, { status: 500 });
   }
 }

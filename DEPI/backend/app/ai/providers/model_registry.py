@@ -17,6 +17,7 @@ class ModelType(Enum):
     OCR = "ocr"
     EMBEDDING = "embedding"
     COMPLETION = "completion"
+    ORCHESTRATION = "orchestration"
 
 
 class ModelInfo:
@@ -64,6 +65,15 @@ class ModelRegistry:
                 model_type=ModelType.CHAT,
                 context_length=131072,
                 description="Llama 3.3 70B - High performance chat model",
+            )
+        )
+        self.register_model(
+            ModelInfo(
+                name="llama-3.3-70b-versatile",
+                provider="groq",
+                model_type=ModelType.ORCHESTRATION,
+                context_length=131072,
+                description="Llama 3.3 70B - Primary multimodal orchestration brain (classify + route)",
             )
         )
         self.register_model(
@@ -180,6 +190,10 @@ class ModelRegistry:
     
     def get_default_chat_model(self) -> str:
         """Get the default chat model name."""
+        return "llama-3.3-70b-versatile"
+
+    def get_default_orchestration_model(self) -> str:
+        """Get the default orchestration model name."""
         return "llama-3.3-70b-versatile"
     
     def get_default_embedding_model(self) -> str:

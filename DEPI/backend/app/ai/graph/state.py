@@ -6,7 +6,8 @@
 
 from typing import TypedDict, List, Dict, Any, Optional
 from datetime import datetime
-from app.ai.multimodal.schemas import UnifiedMedicalContext
+from app.ai.multimodal.schemas import UnifiedMedicalContext, ProcessingContext
+from app.ai.multimodal.enums import ProcessorType
 
 
 class GraphState(TypedDict):
@@ -80,3 +81,30 @@ class ReportState(GraphState):
     report_type: str
     template_data: Dict[str, Any]
     generated_report: Optional[str]
+
+
+class MultimodalPipelineState(TypedDict, total=False):
+    """
+    State for the multimodal upload execution graph.
+
+    The graph receives a fully classified + preprocessed ProcessingContext
+    (produced by MultimodalOrchestrator) and executes the appropriate
+    extraction / enrichment nodes based on `processor` and document type.
+    All nodes mutate the shared `context` in place.
+    """
+
+    # Input / shared mutable payload
+    context: ProcessingContext
+
+    # Routing decision (mirrors context.processor_type for conditional edges)
+    processor: ProcessorType
+
+    # Optional enrichment flags resolved during execution
+    needs_lab_interpretation: bool
+    needs_drug_interaction: bool
+
+    # Error capture (non-fatal: graph continues to finalize)
+    error: Optional[str]
+
+    # Operational metadata
+    metadata: Dict[str, Any]
